@@ -3,12 +3,7 @@ const jwt = require('jsonwebtoken');
 let books = require("./booksdb.js");
 const regd_users = express.Router();
 
-let users = [
-    {
-    "username":"user",
-    "password":"password"
-    }
-];
+let users = [];
 
 const isValid = (username)=>{ //returns boolean
     // Filter the users array for any user with the same username
@@ -71,7 +66,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     
     if (books[isbn]){
         books[isbn].reviews[username] = review;
-        res.send("review has been added");
+        res.send("review for ISBN: " + isbn + " has been added by `" + username + "`");
     }else{
         res.send("cannot find book with isbn: " + isbn);
     }
@@ -84,7 +79,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
 
     if (books[isbn].reviews[username]){
         delete books[isbn].reviews[username];
-        res.send("review has been deleted");
+        res.send("review for ISBN: " + isbn + " posted by `" + username + "` has been deleted");
     }else{
         res.send("review could not be found");
     }
