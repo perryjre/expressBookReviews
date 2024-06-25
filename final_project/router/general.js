@@ -29,7 +29,7 @@ public_users.post("/register", (req,res) => {
     res.send(JSON.stringify(books,null,4));
 });*/
 
-let getBooks = new Promise((resolve, reject) => {
+let getBooks = new Promise((resolve) => {
     resolve(books);
 });
 public_users.get('/',function (req, res) {
@@ -48,7 +48,7 @@ public_users.get('/',function (req, res) {
     res.send(books[isbn]);
  });*/
 
- function getBookByIsbn(isbn) {
+function getBookByIsbn(isbn) {
     return new Promise((resolve, reject) => {
         const book = books[isbn];
         if (book) {
@@ -84,7 +84,32 @@ public_users.get('/isbn/:isbn',function (req, res) {
     res.send(booksbyauthor);
 });*/
 
+function getBooksByAuthor(author){
+    return new Promise((resolve, reject) => {
+        let booksbyauthor = [];
+        Object.values(books).forEach(book => {
+            if (book.author === author) { 
+                booksbyauthor.push(book);
+            }
+        });
+        if(booksbyauthor.length > 0){
+            resolve(booksbyauthor);
+        }else{
+            reject("books not found");
+        }
+    });
+}
+public_users.get('/author/:author',function (req, res) {
+    let author = req.params.author;
 
+    getBooksByAuthor(author)
+        .then(booksbyauthor => {
+            res.send(booksbyauthor);
+        })
+        .catch(error => {
+            res.status(404).send(error);
+        })
+});
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
