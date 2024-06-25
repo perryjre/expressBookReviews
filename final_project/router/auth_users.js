@@ -3,7 +3,12 @@ const jwt = require('jsonwebtoken');
 let books = require("./booksdb.js");
 const regd_users = express.Router();
 
-let users = [];
+let users = [
+    {
+    "username":"user",
+    "password":"password"
+    }
+];
 
 const isValid = (username)=>{ //returns boolean
     // Filter the users array for any user with the same username
@@ -32,9 +37,9 @@ const authenticatedUser = (username,password)=>{ //returns boolean
 }
 
 //only registered users can login
-regd_users.post("customer/login", (req,res) => {
-    const username = req.body.username;
-    const password = req.body.password;
+regd_users.post("/login", (req,res) => {
+    let username = req.body.username;
+    let password = req.body.password;
 
     // Check if username or password is missing
     if (!username || !password) {
@@ -46,7 +51,7 @@ regd_users.post("customer/login", (req,res) => {
         // Generate JWT access token
         let accessToken = jwt.sign({
             data: password
-        }, 'access', { expiresIn: 60 * 60 });
+        }, 'access', { expiresIn: 60 * 60 * 60 });
 
         // Store access token and username in session
         req.session.authorization = {
@@ -60,8 +65,18 @@ regd_users.post("customer/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    let username = req.session.authorization.username;
+    let review = req.body.review;
+    let isbn = req.params.isbn;
+    
+    if (books[isbn]){
+        books[isbn].reviews[username] = review;
+        res.send("review has been added");
+    }else{
+        res.send("cannot find book with isbn: " + isbn);
+    }
+
+    res.send(username + "hello");
 });
 
 module.exports.authenticated = regd_users;
