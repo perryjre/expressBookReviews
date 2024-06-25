@@ -50,8 +50,9 @@ public_users.get('/',function (req, res) {
 
 function getBookByIsbn(isbn) {
     return new Promise((resolve, reject) => {
-        const book = books[isbn];
+        let book = books[isbn];
         if (book) {
+            book = {"Book by ISBN": book};
             resolve(book);
         } else {
             reject('Book not found');
@@ -93,6 +94,7 @@ function getBooksByAuthor(author){
             }
         });
         if(booksbyauthor.length > 0){
+            booksbyauthor = {"Books by Author": booksbyauthor};
             resolve(booksbyauthor);
         }else{
             reject("books not found");
@@ -134,6 +136,7 @@ function getBookByTitle(title){
             }
         });
         if(booksbytitle.length > 0){
+            booksbytitle = {"Book by Title": booksbytitle};
             resolve(booksbytitle);
         }else{
             reject("book not found");
@@ -155,7 +158,8 @@ public_users.get('/title/:title',function (req, res) {
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
     const isbn = req.params.isbn;
-    res.send(books[isbn].reviews)
+    reviewlist = {"Reviews": books[isbn].reviews};
+    res.send(reviewlist)
 });
 
 module.exports.general = public_users;
